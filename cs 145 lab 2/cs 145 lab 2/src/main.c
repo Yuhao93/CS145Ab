@@ -92,7 +92,7 @@ int get_numberPres(bool buttonPreSta[])
 	{
 		for(int j =0; j<3; j++)
 		{
-			if(check_press(i,j) && !buttonPreSta[i * 3 + j])
+			if(check_press(i,j) && !buttonPreSta[i * 4 + j])
 			{
 				return (i*3+j+1);
 			}
