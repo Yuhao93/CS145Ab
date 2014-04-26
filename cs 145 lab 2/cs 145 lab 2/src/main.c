@@ -136,86 +136,86 @@ bool isLeapYear(unsigned int year)
 
 // Get the hour, correctly formatted based on the isMilitary setting
 int formatHour(int hour, bool isMilitary) {
-  if (isMilitary) {
-    return hour;
-  }
-  int hour = cal.hour;
-	if (hour >= 12) { 
-    hour = hour - 12;
+	if (isMilitary) {
+		return hour;
 	}
-  if (hour == 0) {
-    hour = 12;
-  }
-  return hour;
+	int hour = cal.hour;
+	if (hour >= 12) { 
+		hour = hour - 12;
+	}
+	if (hour == 0) {
+		hour = 12;
+	}
+	return hour;
 }
 
 // Checks whether or not the given input is valid for the given state.
 // If not, then default to a valid value.
 int formatValid(int value, int state, Calendar& cal, const unsigned char dayTbl[], bool isMilitary) {
-  switch (state) {
-    case 1:
-      return isMilitary ? (value >= 24 ? 0 : value) : (value >= 12 || value < 0 ? 0 : value);
-    case 2:
-    case 3:
-      return value >= 60 ? 0 : value;
-    case 4:
-      return value != 0 ? 1 : 0;
-    case 5:
-      return value > 12 ? 1 : value;
-    case 6:
-      return value > dayTbl[cal.month] ? 1 : value;
-  }
-  return value;
+	switch (state) {
+		case 1:
+			return isMilitary ? (value >= 24 ? 0 : value) : (value >= 12 ? 0 : value);
+		case 2:
+		case 3:
+			return value >= 60 ? 0 : value;
+		case 4:
+			return value != 0 ? 1 : 0;
+		case 5:
+			return value > 12 ? 1 : value;
+		case 6:
+			return value > dayTbl[cal.month] ? 1 : value;
+	}
+	return value;
 }
 
 // Redraws the data on the LCD, changes depending on the state
 void printData(int value, int state, Calendar& cal, char dateBuff[], char timeBuff[], bool isMilitary) {
-  clr_lcd();
-  if (state == 7 || state == 6 || state == 5 || state == 0) {
-    sprintf(timeBuff,"%02i:%02i:%02i %s     ",
-        formatHour(cal.hour, isMilitary),
-        cal.min,
-        cal.sec,
-        isMilitary ? "  " : (hour >= 12 ? "pm" : "am"));
-  } else if (state == 4) {
-    sprintf(timeBuff,"%02i:%02i:%02i %s     ", formatHour(cal.hour, isMilitary), cal.min, cal.sec, value == 0 ? "am" : "pm");
-  } else if (state == 3) {
-    sprintf(timeBuff,"%02i:%02i:%02i %s     ", formatHour(cal.hour, isMilitary), cal.min, value, isMilitary ? "  " : "--");
-  } else if (state == 2) {
-    sprintf(timeBuff,"%02i:%02i:-- %s     ", formatHour(cal.hour, isMilitary), value, isMilitary ? "  " : "--");
-  } else if (state == 1) {
-    sprintf(timeBuff,"%02i:--:-- %s     ", value, isMilitary ? "  " : "--");
-  }
-  
-  if (state == 1 || state == 2 || state == 3 || state == 4) {
-    sprintf(dateBuff, "--/--/----      ");
-  } else if (state == 5) {
-    sprintf(dateBuff, "%02i/--/----      ", value);
-  } else if (state == 6) {
-    sprintf(dateBuff, "%02i/%02i/----      ", cal.month, value);
-  } else if (state == 7) {
-    sprintf(dateBuff, "%02i/%02i/%04i      ", cal.month, cal.day, value);
-  } else if (state == 0) {
-    sprintf(dateBuff, "%02i/%02i/%04i      ", cal.month, cal.day, cal.year);
-  }
+	clr_lcd();
+	if (state == 7 || state == 6 || state == 5 || state == 0) {
+		sprintf(timeBuff,"%02i:%02i:%02i %s		 ",
+				formatHour(cal.hour, isMilitary),
+				cal.min,
+				cal.sec,
+				isMilitary ? "	" : (hour >= 12 ? "pm" : "am"));
+	} else if (state == 4) {
+		sprintf(timeBuff,"%02i:%02i:%02i %s		 ", formatHour(cal.hour, isMilitary), cal.min, cal.sec, value == 0 ? "am" : "pm");
+	} else if (state == 3) {
+		sprintf(timeBuff,"%02i:%02i:%02i %s		 ", formatHour(cal.hour, isMilitary), cal.min, value, isMilitary ? "	" : "--");
+	} else if (state == 2) {
+		sprintf(timeBuff,"%02i:%02i:-- %s		 ", formatHour(cal.hour, isMilitary), value, isMilitary ? "	" : "--");
+	} else if (state == 1) {
+		sprintf(timeBuff,"%02i:--:-- %s		 ", value, isMilitary ? "	" : "--");
+	}
+	
+	if (state == 1 || state == 2 || state == 3 || state == 4) {
+		sprintf(dateBuff, "--/--/----			");
+	} else if (state == 5) {
+		sprintf(dateBuff, "%02i/--/----			", value);
+	} else if (state == 6) {
+		sprintf(dateBuff, "%02i/%02i/----			", cal.month, value);
+	} else if (state == 7) {
+		sprintf(dateBuff, "%02i/%02i/%04i			", cal.month, cal.day, value);
+	} else if (state == 0) {
+		sprintf(dateBuff, "%02i/%02i/%04i			", cal.month, cal.day, cal.year);
+	}
 
-  pos_lcd(0,0);
-  put_str_lcd(datebuff);
+	pos_lcd(0,0);
+	put_str_lcd(datebuff);
 	pos_lcd(1,0);
 	put_str_lcd(timebuff);
 }
 
 bool check_press(int r, int c)
 {
-  for (int i = 0; i < 8; i++) {
-    if (i < 4) {
-      CLR_BIT(DDRC, i);
-      SET_BIT(PORTC, i);
-    } else {
-      SET_BIT(DDRC, i);
-      CLR_BIT(PORTC, i);
-    }
-  }
+	for (int i = 0; i < 8; i++) {
+		if (i < 4) {
+			CLR_BIT(DDRC, i);
+			SET_BIT(PORTC, i);
+		} else {
+			SET_BIT(DDRC, i);
+			CLR_BIT(PORTC, i);
+		}
+	}
 
 	/*SET_BIT(DDRC,7);//output
 	SET_BIT(DDRC,6);//output
@@ -235,18 +235,18 @@ bool check_press(int r, int c)
 	CLR_BIT(PORTC,4);*/
 	//SET_BIT(PORTC,r);
 	bool col_on = GET_BIT(PINC,c) == 0;
-  
-  for (int i = 0; i < 8; i++) {
-    if (i < 4) {
-      SET_BIT(DDRC, i);
-      CLR_BIT(PORTC, i);
-    } else {
-      CLR_BIT(DDRC, i);
-      SET_BIT(PORTC, i);
-    }
-  }
-  
-  /*
+	
+	for (int i = 0; i < 8; i++) {
+		if (i < 4) {
+			SET_BIT(DDRC, i);
+			CLR_BIT(PORTC, i);
+		} else {
+			CLR_BIT(DDRC, i);
+			SET_BIT(PORTC, i);
+		}
+	}
+	
+	/*
 	CLR_BIT(DDRC,7);//output
 	CLR_BIT(DDRC,6);//output
 	CLR_BIT(DDRC,5);//output
@@ -323,81 +323,82 @@ int main (void)
 		if(setState > 0)
 		{
 			int num = get_numberPres(buttonPreSta);
-      if (num >= 0) {
-        numButtonPress++;
-        currentSetValue= currentSetValue * 10 + num;
-        switch(setState)
-        {
-          case 1:
-            if (numButtonPress == 2)
-            {
-              calendar.hour = formatValid(currentSetValue, setState, calendar, dayTbl, isMilitary);
-              currentSetValue = 0;
-              setState++;
-            }
-          break;
+			if (num >= 0) {
+				numButtonPress++;
+				currentSetValue= currentSetValue * 10 + num;
+				switch(setState)
+				{
+					case 1:
+						if (numButtonPress == 2)
+						{
+							calendar.hour = formatValid(currentSetValue, setState, calendar, dayTbl, isMilitary);
+							currentSetValue = 0;
+							setState++;
+						}
+					break;
 				
-          case 2:
-            if(numButtonPress == 2)
-            {
-              calendar.min = formatValid(currentSetValue, setState, calendar, dayTbl, isMilitary);
-              currentSetValue = 0;
-              setState++;
-            }
-          break;
+					case 2:
+						if(numButtonPress == 2)
+						{
+							calendar.min = formatValid(currentSetValue, setState, calendar, dayTbl, isMilitary);
+							currentSetValue = 0;
+							setState++;
+						}
+					break;
 				
-          case 3:
-            if(numButtonPress == 2)
-            {
-              calendar.sec = formatValid(currentSetValue, setState, calendar, dayTbl, isMilitary);
-              currentSetValue = 0;
-              if(isMilitary)
-              {
-                setState += 2;
-              }
-              else
-              {
-                setState++;
-              }
-            }
-          break;
-        
-          case 4:
-            if (numButtonPress == 1) {
-              isMilitary = formatValid(currentSetValue, setState, calendar, dayTbl, isMilitary) == 1;
-              currentSetValue = 0;
-              setState++;
-            }
-          break;
+					case 3:
+						if(numButtonPress == 2)
+						{
+							calendar.sec = formatValid(currentSetValue, setState, calendar, dayTbl, isMilitary);
+							currentSetValue = 0;
+							if(isMilitary)
+							{
+								setState += 2;
+							}
+							else
+							{
+								setState++;
+							}
+						}
+					break;
 				
-          case 5:
-            if(numButtonPress == 2)
-            {
-              calendar.month = formatValid(currentSetValue, setState, calendar, dayTbl, isMilitary);
-              currentSetValue = 0;
-              setState++;
-            }
-          break;
+					case 4:
+						if (numButtonPress == 1) {
+							// If 0, then am, leave alone. If 1, then pm, add 12 hours to the "actual" time.
+							calendar.hour += formatValid(currentSetValue, setState, calendar, dayTbl, isMilitary) * 12;
+							currentSetValue = 0;
+							setState++;
+						}
+					break;
 				
-          case 6:
-            if(numButtonPress == 2)
-            {
-              calendar.day = formatValid(currentSetValue, setState, calendar, dayTbl, isMilitary);
-              currentSetValue = 0;
-              setState++;
-            }
-          break;
+					case 5:
+						if(numButtonPress == 2)
+						{
+							calendar.month = formatValid(currentSetValue, setState, calendar, dayTbl, isMilitary);
+							currentSetValue = 0;
+							setState++;
+						}
+					break;
 				
-          case 7:
-            if(numButtonPress == 4)
-            {
-              calendar.year = formatValid(currentSetValue, setState, calendar, dayTbl, isMilitary);
-              currentSetValue = 0;
-              setState = 0;
-            }
-          break;
-        }
-      }
+					case 6:
+						if(numButtonPress == 2)
+						{
+							calendar.day = formatValid(currentSetValue, setState, calendar, dayTbl, isMilitary);
+							currentSetValue = 0;
+							setState++;
+						}
+					break;
+				
+					case 7:
+						if(numButtonPress == 4)
+						{
+							calendar.year = formatValid(currentSetValue, setState, calendar, dayTbl, isMilitary);
+							currentSetValue = 0;
+							setState = 0;
+						}
+					break;
+				}
+			}
 		}
 		else{
 			wait_avr(1000);
@@ -433,7 +434,7 @@ int main (void)
 			/*
 			if(isMilitary){
 				
-				sprintf(timebuff,"%02i:%02i:%02i      ",calendar.hour,calendar.min,calendar.sec);
+				sprintf(timebuff,"%02i:%02i:%02i			",calendar.hour,calendar.min,calendar.sec);
 			}
 			else
 			{
@@ -449,12 +450,12 @@ int main (void)
 				}
 				if(calendar.hour > 11)
 				{
-					sprintf(timebuff,"%02i:%02i:%02ipm      ",hour, calendar.min,calendar.sec);
+					sprintf(timebuff,"%02i:%02i:%02ipm			",hour, calendar.min,calendar.sec);
 				}
 				else{
-				sprintf(timebuff,"%02i:%02i:%02iam      ",hour, calendar.min,calendar.sec);}
+				sprintf(timebuff,"%02i:%02i:%02iam			",hour, calendar.min,calendar.sec);}
 			}
-			sprintf(datebuff,"%02i/%02i/%02i      ",calendar.month,calendar.day,calendar.year);
+			sprintf(datebuff,"%02i/%02i/%02i			",calendar.month,calendar.day,calendar.year);
 			pos_lcd(0,0);
 			put_str_lcd(datebuff);
 			pos_lcd(1,0);
@@ -463,12 +464,12 @@ int main (void)
 				isMilitary =!isMilitary;
 			}
 		}
-    
-    for(int i =0; i <4; i++) {
+		
+		for(int i =0; i <4; i++) {
 			for(int j = 0; j<4; j++) {
-        buttonPreSta[i*4+j] = check_press(i,j);
+				buttonPreSta[i*4+j] = check_press(i,j);
 			}
 		}
-    printData(currentSetValue, setState, calendar, dateBuff, timeBuff, isMilitary);
+		printData(currentSetValue, setState, calendar, dateBuff, timeBuff, isMilitary);
 	}
 }
