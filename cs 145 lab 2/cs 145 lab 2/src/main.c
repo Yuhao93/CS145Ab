@@ -172,31 +172,31 @@ int formatValid(int value, int state, Calendar& cal, const unsigned char dayTbl[
 void printData(int value, int state, Calendar& cal, char dateBuff[], char timeBuff[], bool isMilitary) {
 	clr_lcd();
 	if (state == 7 || state == 6 || state == 5 || state == 0) {
-		sprintf(timeBuff,"%02i:%02i:%02i %s		 ",
+		sprintf(timeBuff,"%02i:%02i:%02i %s     ",
 				formatHour(cal.hour, isMilitary),
 				cal.min,
 				cal.sec,
 				isMilitary ? "	" : (hour >= 12 ? "pm" : "am"));
 	} else if (state == 4) {
-		sprintf(timeBuff,"%02i:%02i:%02i %s		 ", formatHour(cal.hour, isMilitary), cal.min, cal.sec, value == 0 ? "am" : "pm");
+		sprintf(timeBuff,"%02i:%02i:%02i %s	    ", formatHour(cal.hour, isMilitary), cal.min, cal.sec, value == 0 ? "am" : "pm");
 	} else if (state == 3) {
-		sprintf(timeBuff,"%02i:%02i:%02i %s		 ", formatHour(cal.hour, isMilitary), cal.min, value, isMilitary ? "	" : "--");
+		sprintf(timeBuff,"%02i:%02i:%02i %s	    ", formatHour(cal.hour, isMilitary), cal.min, value, isMilitary ? "	" : "--");
 	} else if (state == 2) {
-		sprintf(timeBuff,"%02i:%02i:-- %s		 ", formatHour(cal.hour, isMilitary), value, isMilitary ? "	" : "--");
+		sprintf(timeBuff,"%02i:%02i:-- %s	    ", formatHour(cal.hour, isMilitary), value, isMilitary ? "	" : "--");
 	} else if (state == 1) {
-		sprintf(timeBuff,"%02i:--:-- %s		 ", value, isMilitary ? "	" : "--");
+		sprintf(timeBuff,"%02i:--:-- %s	    ", value, isMilitary ? "	" : "--");
 	}
 	
 	if (state == 1 || state == 2 || state == 3 || state == 4) {
-		sprintf(dateBuff, "--/--/----			");
+		sprintf(dateBuff, "--/--/----      ");
 	} else if (state == 5) {
-		sprintf(dateBuff, "%02i/--/----			", value);
+		sprintf(dateBuff, "%02i/--/----      ", value);
 	} else if (state == 6) {
-		sprintf(dateBuff, "%02i/%02i/----			", cal.month, value);
+		sprintf(dateBuff, "%02i/%02i/----      ", cal.month, value);
 	} else if (state == 7) {
-		sprintf(dateBuff, "%02i/%02i/%04i			", cal.month, cal.day, value);
+		sprintf(dateBuff, "%02i/%02i/%04i      ", cal.month, cal.day, value);
 	} else if (state == 0) {
-		sprintf(dateBuff, "%02i/%02i/%04i			", cal.month, cal.day, cal.year);
+		sprintf(dateBuff, "%02i/%02i/%04i      ", cal.month, cal.day, cal.year);
 	}
 
 	pos_lcd(0,0);
