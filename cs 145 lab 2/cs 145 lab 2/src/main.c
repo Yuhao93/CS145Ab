@@ -98,7 +98,7 @@ int get_numberPres(bool buttonPreSta[])
 			}
 		}
 	}
-	if(check_press(3,1) && !buttonPreSta[i * 3 + j])
+	if(check_press(3,1) && !buttonPreSta[i * 4 + j])
 	{
 		return 0;
 	}
