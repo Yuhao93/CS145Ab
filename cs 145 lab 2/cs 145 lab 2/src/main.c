@@ -176,15 +176,15 @@ void printData(int value, int state, Calendar& cal, char dateBuff[], char timeBu
 				formatHour(cal.hour, isMilitary),
 				cal.min,
 				cal.sec,
-				isMilitary ? "	" : (hour >= 12 ? "pm" : "am"));
+				isMilitary ? "  " : (hour >= 12 ? "pm" : "am"));
 	} else if (state == 4) {
 		sprintf(timeBuff,"%02i:%02i:%02i %s	    ", formatHour(cal.hour, isMilitary), cal.min, cal.sec, value == 0 ? "am" : "pm");
 	} else if (state == 3) {
-		sprintf(timeBuff,"%02i:%02i:%02i %s	    ", formatHour(cal.hour, isMilitary), cal.min, value, isMilitary ? "	" : "--");
+		sprintf(timeBuff,"%02i:%02i:%02i %s	    ", formatHour(cal.hour, isMilitary), cal.min, value, isMilitary ? "  " : "--");
 	} else if (state == 2) {
-		sprintf(timeBuff,"%02i:%02i:-- %s	    ", formatHour(cal.hour, isMilitary), value, isMilitary ? "	" : "--");
+		sprintf(timeBuff,"%02i:%02i:-- %s	    ", formatHour(cal.hour, isMilitary), value, isMilitary ? "  " : "--");
 	} else if (state == 1) {
-		sprintf(timeBuff,"%02i:--:-- %s	    ", value, isMilitary ? "	" : "--");
+		sprintf(timeBuff,"%02i:--:-- %s	    ", value, isMilitary ? "  " : "--");
 	}
 	
 	if (state == 1 || state == 2 || state == 3 || state == 4) {
