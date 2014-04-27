@@ -88,9 +88,9 @@ ISR()
 }*/
 int get_numberPres()
 {
-	for(int i =0; i<3; i++)
+	for(int i =1; i<4; i++)
 	{
-		for(int j =0; j<3; j++)
+		for(int j =1; j<4; j++)
 		{
 			if(check_press(i,j))
 			{
@@ -131,45 +131,36 @@ bool isLeapYear(unsigned int year)
 	else
 	return false;
 }
-bool check_press(int r, int c)
+bool check_press(int c, int r)
 {
-	SET_BIT(DDRC,7);//output
-	SET_BIT(DDRC,6);//output
-	SET_BIT(DDRC,5);//output
-	SET_BIT(DDRC,4);//output
-	CLR_BIT(DDRC,3);//input
-	CLR_BIT(DDRC,2);//input
-	CLR_BIT(DDRC,1);//input
-	CLR_BIT(DDRC,0);//input
-	SET_BIT(PORTC,3);//internal pull up
-	SET_BIT(PORTC,2);//internal pull up
-	SET_BIT(PORTC,1);//internal pull up
-	SET_BIT(PORTC,0);//internal pull up
-	CLR_BIT(PORTC,7);
-	CLR_BIT(PORTC,6);
-	CLR_BIT(PORTC,5);
-	CLR_BIT(PORTC,4);
-	//SET_BIT(PORTC,r);
-	bool col_on = GET_BIT(PINC,c) == 0;
-	CLR_BIT(DDRC,7);//output
-	CLR_BIT(DDRC,6);//output
-	CLR_BIT(DDRC,5);//output
-	CLR_BIT(DDRC,4);//output
-	SET_BIT(DDRC,3);//input
-	SET_BIT(DDRC,2);//input
-	SET_BIT(DDRC,1);//input
-	SET_BIT(DDRC,0);//input
-	CLR_BIT(PORTC,3);//internal pull up
-	CLR_BIT(PORTC,2);//internal pull up
-	CLR_BIT(PORTC,1);//internal pull up
-	CLR_BIT(PORTC,0);//internal pull up
-	SET_BIT(PORTC,7);
-	SET_BIT(PORTC,6);
-	SET_BIT(PORTC,5);
-	SET_BIT(PORTC,4);
-	//SET_BIT(PORTC,r);
-	bool row_on = GET_BIT(PINC,r+4) == 0;
-	return(row_on && col_on);
+	
+	for(int i = 4; i<8;i++)
+	{
+		SET_BIT(DDRC,i);
+		CLR_BIT(PORTC,i);
+	}
+	CLR_BIT(DDRC,c);
+	SET_BIT(PORTC,c);
+	volatile int j = 0;
+	for(j; j<1000;j++)
+	{
+		//wait some cycles for set bit and mode to change
+	}
+	bool col_on = GET_BIT(PINC,c)== 0;
+	for(int i = 0; i<4;i++)
+	{
+		SET_BIT(DDRC,i);
+		CLR_BIT(PORTC,i);
+	}
+	CLR_BIT(DDRC,r+4);
+	SET_BIT(PORTC,r+4);
+	volatile int k = 0;
+	for(k; k<1000;k++)
+	{
+		//wait some cycles for set bit and mode to change
+	}
+	bool row_on = (GET_BIT(PINC,r+4) == 0);
+	return( col_on && row_on);
 }
 
 int main (void)
@@ -177,6 +168,7 @@ int main (void)
 	board_init();
 	ini_lcd();
 	ini_avr();
+	
 	calendar.sec =50 ;
 	calendar.min = 59;
 	calendar.hour= 23;
@@ -221,10 +213,25 @@ int main (void)
 	char datebuff[16];
 	int currentSetValue = 0;
 	int numButtonPress = 0;
-	clr_lcd();
+	//clr_lcd();
+	for(int i = 4; i<8;i++)
+	{
+	SET_BIT(DDRC,i);
+	CLR_BIT(PORTC,i);
+	}
+	CLR_BIT(DDRC,0);
+	SET_BIT(PORTC,0);
 	while(true)
 	{
-		if(setState >0)
+		wait_avr(1000);
+		clr_lcd();
+		if(check_press(0,0))
+		{
+			
+			put_str_lcd("Hello");
+		}
+		
+		/*if(setState >0)
 		{
 			
 			int num = get_numberPres();
@@ -339,9 +346,9 @@ int main (void)
 			put_str_lcd(datebuff);
 			pos_lcd(1,0);
 			put_str_lcd(timebuff);
-		}
-		else{
-			wait_avr(1000);
+		}*/
+		//else{
+			/*wait_avr(1000);
 			clr_lcd();
 			
 			calendar.sec++;
@@ -411,9 +418,9 @@ int main (void)
 				{
 					buttonPreSta[i*4+j] = check_press(i,j);
 				}
-			}
+			}*/
 			
-		}
+		//}
 		
 		
 	}
