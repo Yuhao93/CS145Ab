@@ -141,6 +141,30 @@ bool isLeapYear(unsigned int year)
 
 bool check_press(int c, int r)
 {
+	for (int i = 0; i < 4; i++) {
+		// Convert each column into an input with internal pull-up
+		CLR_BIT(DDRC, i);
+		SET_BIT(PORTC, i);
+		
+		// Convert the selected row into output ground
+		// Convert all other rows into high impedance input
+		if (r == i) {
+			// DDR = 1, PORT = 0 => Ground
+			SET_BIT(DDRC, i + 4);
+			CLR_BIT(PORTC, i + 4);
+		} else {
+			// DDR = 0, PORT = 0 => High Impedance Input
+			CLR_BIT(DDRC, i + 4);
+			CLR_BIT(PORTC, i + 4);
+		}
+	}
+	
+	// Wait a few clock cycles for output voltage to update
+	volatile int i;
+	for (i = 0; i < 100; i++) { }
+		
+	return GET_BIT(PINC, c) == 0;
+	/*
 	for(int i = 4; i<8;i++)
 	{
 		SET_BIT(DDRC,i);
@@ -167,7 +191,7 @@ bool check_press(int c, int r)
 		//wait some cycles for set bit and mode to change
 	}
 	bool row_on = (GET_BIT(PINC,r+4) == 0);
-	return( col_on && row_on);
+	return( col_on && row_on);*/
 }
 
 // Get the hour, correctly formatted based on the isMilitary setting
@@ -485,17 +509,13 @@ int main (void)
 			
 			}*/
 
-			//isMilitary =!isMilitary;
-			if (isMilitary) {
-				isMilitary = false;
-			}
-			else {
-				isMilitary = true;
+			if (check_press(2, 3) && !buttonPreSta[2 * 4 + 3]) {
+				isMilitary =!isMilitary;
 			}
 			printData(currentSetValue, setState, &calendar, datebuff, timebuff, isMilitary);
 		}
-		for(int i =0; i <4; i++) {
-			for(int j = 0; j<4; j++) {
+		for(int i = 0; i < 4; i++) {
+			for(int j = 0; j< 4; j++) {
 				buttonPreSta[i*4+j] = check_press(i,j);
 			}
 		}
