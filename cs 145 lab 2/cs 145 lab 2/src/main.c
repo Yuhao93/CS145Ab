@@ -49,57 +49,6 @@ void out (char str[], int col);
 int formatValid(int currValue, int state, struct Calendar* cal, const unsigned char dayTbl[], bool isMilitary);
 void printData(int currValue, int state, struct Calendar* cal, char dateBuff[], char timeBuff[], bool isMilitary);
 
-
-/*void io_init()
-{
-cli()
-board_init();
-ini_lcd();
-ini_avr();
-calendar.sec =50 ;
-calendar.min = 59;
-calendar.hour= 23;
-calendar.day=28;
-calendar.month=2;
-calendar.year=5;
-wdt_reset();
-WDTCR |= 1<<WDTOE;
-WDTCR = (1<<WDE)|(1<<WDP2)|(1<<WDP1));
-sei();
-}
-ISR()
-{
-sleep_disable();
-clr_lcd();
-calendar.sec++;
-if(calendar.sec == 60)
-{
-calendar.min++;
-calendar.sec = 0;
-}
-if(calendar.min == 60)
-{
-
-calendar.hour++;
-calendar.min = 0;
-}
-if(calendar.hour == 24)
-{
-calendar.day++;
-calendar.hour=0;
-}
-if(calendar.day > dayTbl[calendar.month]+(isLeapYear(calendar.year) &&calendar.month ==2 ? 1 : 0))
-{
-calendar.day =1;
-calendar.month++;
-}
-if(calendar.month == 13)
-{
-calendar.year++;
-calendar.month=1;
-}
-sleep_enable();
-}*/
 int get_numberPres(bool buttonPreSta[])
 {
 	for(int i =0; i<3; i++)
@@ -164,34 +113,6 @@ bool check_press(int c, int r)
 	for (i = 0; i < 100; i++) { }
 		
 	return GET_BIT(PINC, c) == 0;
-	/*
-	for(int i = 4; i<8;i++)
-	{
-		SET_BIT(DDRC,i);
-		CLR_BIT(PORTC,i);
-	}
-	CLR_BIT(DDRC,c);
-	SET_BIT(PORTC,c);
-	volatile int j = 0;
-	for(j; j<1000;j++)
-	{
-		//wait some cycles for set bit and mode to change
-	}
-	bool col_on = GET_BIT(PINC,c)== 0;
-	for(int i = 0; i<4;i++)
-	{
-		SET_BIT(DDRC,i);
-		CLR_BIT(PORTC,i);
-	}
-	CLR_BIT(DDRC,r+4);
-	SET_BIT(PORTC,r+4);
-	volatile int k = 0;
-	for(k; k<1000;k++)
-	{
-		//wait some cycles for set bit and mode to change
-	}
-	bool row_on = (GET_BIT(PINC,r+4) == 0);
-	return( col_on && row_on);*/
 }
 
 // Get the hour, correctly formatted based on the isMilitary setting
@@ -221,9 +142,9 @@ int formatValid(int currValue, int state, struct Calendar* cal, const unsigned c
 		case 4:
 		return currValue != 0 ? 1 : 0;
 		case 5:
-		return currValue > 12 ? 1 : currValue;
+		return currValue > 12  || currValue < 1 ? 1 : currValue;
 		case 6:
-		return currValue > dayTbl[cal->month] ? 1 : currValue;
+		return currValue > (isLeapYear(cal->year) && cal->month == 2 ? dayTbl[cal->month] + 1 : dayTbl[cal->month])  || currValue < 1? 1 : currValue;
 	}
 	return currValue;
 }
@@ -274,30 +195,12 @@ int main (void)
 {
 	board_init();
 	ini_lcd();
-	ini_avr();
-	wdt_disable();
-	calendar.sec =50 ;
-	calendar.min = 59;
-	calendar.hour= 23;
-	calendar.day = 28;
-	calendar.month = 2;
-	calendar.year = 5;
-	//watchdog registers
-	/*if(MCUCSR & _BV(WDRF))
-	{
-	MCUCSR &= ~_BV(WDRF);
-	WDTCSR |= (_BV(WDCE) | _BV(WDE));
-	WDTCSR = 0x00;
-	
-	}*/
-	//MCUCSR = 1<<JTD;
-	//MCUCSR = 1<<JTD;
 	bool buttonPreSta[16];
 	for (int i = 0; i < 16; i++)
 	{
 		buttonPreSta[i] = false;
 	}
-	int setState =1;
+	int setState = 1;
 	
 	const unsigned char dayTbl[13] = {
 		0,
@@ -316,39 +219,26 @@ int main (void)
 	};
 	
 	clr_lcd();
-	//put_lcd('5');
-	put_str_lcd("Cheese are you h");
-	pos_lcd(1,0);
-	put_str_lcd("appy now");
-	char timebuff[16];
-	char datebuff[16];
+	char timebuff[17];
+	char datebuff[17];
 	int currentSetValue = 0;
 	int numButtonPress = 0;
-	wait_avr(1000);
-	clr_lcd();
 	bool isMilitary = true;
 	
 	printData(currentSetValue, setState, &calendar, datebuff, timebuff, isMilitary);
 	while(true)
 	{
-
-		/*wait_avr(1000);
-		clr_lcd();
-		if(check_press(0,0))
-		{
-		
-		put_str_lcd("Hello");
-		}
-		
-		if(setState >0)*/
 		if(setState > 0)
 		{
 			int num = get_numberPres(buttonPreSta);
-			if (num >= 0) {
+			bool skip = (check_press(3, 2) && !buttonPreSta[3 * 4 + 2]);
+			if (num >= 0 || skip) {
+				if (num >= 0) {
 				numButtonPress++;
-				currentSetValue= currentSetValue * 10 + num;
+				currentSetValue = currentSetValue * 10 + num;
+				}
 				if (setState ==1) {
-					if (numButtonPress == 2)
+					if (numButtonPress == 2 || skip)
 					{
 						calendar.hour = formatValid(currentSetValue, setState, &calendar, dayTbl, isMilitary);
 						currentSetValue = 0;
@@ -358,7 +248,7 @@ int main (void)
 				}
 				
 				else if (setState ==2) {
-					if(numButtonPress == 2)
+					if(numButtonPress == 2 || skip)
 					{
 						calendar.min = formatValid(currentSetValue, setState, &calendar, dayTbl, isMilitary);
 						currentSetValue = 0;
@@ -369,7 +259,7 @@ int main (void)
 				}
 				
 				else if (setState ==3) {
-					if(numButtonPress == 2)
+					if(numButtonPress == 2 || skip)
 					{
 						calendar.sec = formatValid(currentSetValue, setState, &calendar, dayTbl, isMilitary);
 						currentSetValue = 0;
@@ -386,7 +276,7 @@ int main (void)
 				}
 				
 				else if (setState ==4) {
-					if (numButtonPress == 1) {
+					if (numButtonPress == 1 || skip) {
 						// If 0, then am, leave alone. If 1, then pm, add 12 hours to the "actual" time.
 						calendar.hour += formatValid(currentSetValue, setState, &calendar, dayTbl, isMilitary) * 12;
 						currentSetValue = 0;
@@ -396,7 +286,7 @@ int main (void)
 				}
 				
 				else if (setState ==5) {
-					if(numButtonPress == 2)
+					if(numButtonPress == 2 || skip)
 					{
 						calendar.month = formatValid(currentSetValue, setState, &calendar, dayTbl, isMilitary);
 						currentSetValue = 0;
@@ -406,9 +296,9 @@ int main (void)
 				}
 				
 				else if (setState ==6) {
-					if(numButtonPress == 2)
+					if(numButtonPress == 2 || skip)
 					{
-						calendar.day = formatValid(currentSetValue, setState, &calendar, dayTbl, isMilitary);
+						calendar.day = currentSetValue;
 						currentSetValue = 0;
 						setState++;
 						numButtonPress = 0;
@@ -416,9 +306,10 @@ int main (void)
 				}
 				
 				else if (setState ==7) {
-					if(numButtonPress == 4)
+					if(numButtonPress == 4 || skip)
 					{
 						calendar.year = formatValid(currentSetValue, setState, &calendar, dayTbl, isMilitary);
+						calendar.day = formatValid(calendar.day, setState - 1, &calendar, dayTbl, isMilitary);
 						currentSetValue = 0;
 						setState = 0;
 						numButtonPress = 0;
@@ -427,18 +318,10 @@ int main (void)
 				
 				printData(currentSetValue, setState, &calendar, datebuff, timebuff, isMilitary);
 			}
-			/*pos_lcd(0,0);
-			put_str_lcd(datebuff);
-			pos_lcd(1,0);
-			put_str_lcd(timebuff);
-			}
-			//else{
-			wait_avr(1000);*/
 		}
 		else{
 			
 			wait_avr(1000);
-			clr_lcd();
 			
 			calendar.sec++;
 			if(calendar.sec == 60)
@@ -457,7 +340,7 @@ int main (void)
 				calendar.day++;
 				calendar.hour=0;
 			}
-			if(calendar.day > dayTbl[calendar.month]+(isLeapYear(calendar.year) &&calendar.month ==2 ? 1 : 0))
+			if(calendar.day > dayTbl[calendar.month]+(isLeapYear(calendar.year) &&calendar.month == 2 ? 1 : 0))
 			{
 				calendar.day =1;
 				calendar.month++;
@@ -467,50 +350,15 @@ int main (void)
 				calendar.year++;
 				calendar.month=1;
 			}
-			/*
-			if(isMilitary){
-			
-			sprintf(timebuff,"%02i:%02i:%02i			",calendar.hour,calendar.min,calendar.sec);
-			}
-			else
-			{
-			int hour = calendar.hour;
-			if(hour >= 12)
-			{
-			
-			hour=hour-12;
-			}
-			if(hour == 0)
-			{
-			hour = 12;
-			}
-			if(calendar.hour > 11)
-			{
-			sprintf(timebuff,"%02i:%02i:%02ipm			",hour, calendar.min,calendar.sec);
-			}
-			else{
-			sprintf(timebuff,"%02i:%02i:%02iam			",hour, calendar.min,calendar.sec);}
-			}
-			sprintf(datebuff,"%02i/%02i/%02i			",calendar.month,calendar.day,calendar.year);
-			pos_lcd(0,0);
-			put_str_lcd(datebuff);
-			pos_lcd(1,0);
-			put_str_lcd(timebuff);*/
-			
-			
 
-			/*for(int i =0; i <4; i++)
-			{
-			for(int j = 0; j<4; j++)
-			{
-			buttonPreSta[i*4+j] = check_press(i,j);
-			}
-			}
-			
-			}*/
-
-			if (check_press(2, 3) && !buttonPreSta[2 * 4 + 3]) {
+			if (check_press(1, 3) && !buttonPreSta[1 * 4 + 3]) {
 				isMilitary =!isMilitary;
+			}
+			
+			if (check_press(0, 3) && !buttonPreSta[0 * 4 + 3]) {
+				setState = 1;
+				currentSetValue = 0;
+				numButtonPress = 0;
 			}
 			printData(currentSetValue, setState, &calendar, datebuff, timebuff, isMilitary);
 		}
