@@ -7,8 +7,8 @@ freq_key = [
   'REST'
 ];
 freq_val = '0123456789abcdefghijklmnopqrstuvwxyz!';
-duration_key = [ 'wholedot', 'whole', 'halfdot', 'half', 'quarterdot', 'quarter', 'eighthdot', 'eighth', 'sixteenth'];
-duration_val = '012345678';
+duration_key = [ 'wholedot', 'whole', 'halfdot', 'half', 'quarterdot', 'quarter', 'eighthdot', 'eighth', 'sixteenth', 'thirtysecond'];
+duration_val = '0123456789';
 
 buffer = "";
 

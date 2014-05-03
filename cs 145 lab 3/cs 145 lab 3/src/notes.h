@@ -52,7 +52,9 @@
 
 #define REST 1
 
-#define FACTOR 2000
+//#define FACTOR 1575
+//#define FACTOR 1000
+#define FACTOR 1000
 
 typedef struct Note {
 	unsigned long frequency;
@@ -178,31 +180,34 @@ unsigned long getFrequency(char frequency) {
 
 unsigned long getDuration(char duration, unsigned long frequency) {
 	if (duration == '0') {
-		return 24 * FACTOR / frequency;
+		return (unsigned long) 48 * FACTOR / frequency;
 	} else
 	if (duration == '1') {
-		return 16 * FACTOR / frequency;
+		return (unsigned long) 32 * FACTOR / frequency;
 	} else
 	if (duration == '2') {
-		return 12 * FACTOR / frequency;
+		return (unsigned long) 24 * FACTOR / frequency;
 	} else
 	if (duration == '3') {
-		return 8 * FACTOR / frequency;
+		return (unsigned long) 16 * FACTOR / frequency;
 	} else
 	if (duration == '4') {
-		return 6 * FACTOR / frequency;
+		return (unsigned long) 12 * FACTOR / frequency;
 	} else
 	if (duration == '5') {
-		return 4 * FACTOR / frequency;
+		return (unsigned long) 8 * FACTOR / frequency;
 	} else
 	if (duration == '6') {
-		return 3 * FACTOR / frequency;
+		return (unsigned long) 6 * FACTOR / frequency;
 	} else
 	if (duration == '7') {
-		return 2 * FACTOR / frequency;
+		return (unsigned long)  4 * FACTOR / frequency;
 	} else
 	if (duration == '8') {
-		return 1 * FACTOR / frequency;
+		return (unsigned long) 2 * FACTOR / frequency;
+	}
+	else if (duration == '9') {
+		return (unsigned long) 1 * FACTOR / frequency;
 	}
 	return 0;
 }

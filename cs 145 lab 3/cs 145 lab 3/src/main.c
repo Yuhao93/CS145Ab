@@ -33,11 +33,12 @@
 #include "notes.h"
 #include "still_alive.h"
 #include "mario.h"
+#include "smash.h"
 
 int get_numberPres(bool buttonPreSta[]);
 bool check_press(int r, int c);
 
-void playSong(unsigned int noteCount);
+void playSong(unsigned int song, unsigned int noteCount);
 void playNote(Note_t note);
 
 int get_numberPres(bool buttonPreSta[])
@@ -87,13 +88,26 @@ bool check_press(int c, int r)
 	return GET_BIT(PINC, c) == 0;
 }
 
-void playSong(unsigned int noteCount) {
+void playSong(unsigned int song, unsigned int noteCount) {
 	Note_t n;
 	n.frequency = getFrequency('!');
 	n.duration = getDuration('8', n.frequency);
 	n.breakAfter = getTie('0');
 	for (unsigned int i = 0; i < noteCount; i++) {
-		Note_t note = stillAlive(i);
+		Note_t note;
+		switch (song) {
+			case 0:
+				//note = stillAlive(i);
+				break;
+			case 1:
+				//note = mario(i);
+				break;
+			case 2:
+				note = smash(i);
+				break;
+		}
+		
+		
 		playNote(note);
 		if (note.breakAfter) { playNote(n); }
 	}
@@ -128,11 +142,27 @@ int main (void)
 			play = 1;
 		} else if (check_press(0, 1)) {
 			play = 2;
+		} else if (check_press(0, 2)) {
+			play = 3;
 		}
 		if (play == 1) {
-			playSong(STILL_ALIVE_SONG_LENGTH);
+			clr_lcd();
+			put_str_lcd("Now playing...");
+			pos_lcd(1, 0);
+			put_str_lcd("Still Alive");
+			playSong(0, STILL_ALIVE_SONG_LENGTH);
 		} else if (play == 2) {
-			//playSong(mario(), MARIO_SONG_LENGTH);
+			clr_lcd();
+			put_str_lcd("Now playing...");
+			pos_lcd(1, 0);
+			put_str_lcd("Mario");
+			playSong(1, MARIO_SONG_LENGTH);
+		} else if (play == 3) {
+			clr_lcd();
+			put_str_lcd("Now playing...");
+			pos_lcd(1, 0);
+			put_str_lcd("Super Smash");
+			playSong(2, SMASH_SONG_LENGTH);
 		}
 		play = 0;
 	}

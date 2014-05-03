@@ -10,9 +10,9 @@
 #define MARIO_H_
 #include "notes.h"
 
-#define MARIO_SONG_LENGTH 174
+#define MARIO_SONG_LENGTH 464
 
-char __marioString[] = "7g07g07!07g07!07c07g07!07j04!07704!07c05!07705!07405!07907!07b07!07a07907!07707g"/*
+char __marioString[] = "7g07g07!07g07!07c07g07!07j04!07704!07c05!07705!07405!07907!07b07!07a07907!07707g"
 "07j07l07!07h07j07!07g07!07c07e07b05!07c05!07705!07405!07907!07b07!07a07907!07707"
 "g07j07l07!07h07j07!07g07!07c07e07b03!07j07i07h07f07!07g07!07807907c07!07907c07e0"
 "5!07j07i07h07f07!07g07!07o07!07o07o03!07!07j07i07h07f07!07g07!07807907c07!07907c"
@@ -29,16 +29,14 @@ char __marioString[] = "7g07g07!07g07!07c07g07!07j04!07704!07c05!07705!07405!079
 "e07!07g07c07!07907704!07c07c07!07c07!07c07e07g01!07c07c07!07c07!07c07e07!07g07c0"
 "7!07907704!07g07g07!07g07!07c07g07!07j04!07704!07g07c07!07705!07807!07907h07!07h"
 "07904!07b07l07l07l07j07h07g05c07903707g07c07!07705!07807!07907h07!07h07904!07907"
-"h07!07h07h07g07e07c07407!0740700"*/;
+"h07!07h07h07g07e07c07407!0740700";
 
-struct Note* mario() {
-	/*
-	struct Note notes[MARIO_SONG_LENGTH];
-	for (unsigned int i = 0; i < MARIO_SONG_LENGTH; i++) {
-		notes[i] = fromString(0, 0, 0);
-	}
-	return notes;*/
-	return NULL;
+Note_t mario(int ind) {
+	Note_t n;
+	n.frequency = getFrequency(__marioString[3 * ind + 1]);
+	n.duration = getDuration(__marioString[3 * ind], n.frequency);
+	n.breakAfter = getTie(__marioString[3 * ind + 2]);
+	return n;
 }
 
 #endif /* MARIO_H_ */
