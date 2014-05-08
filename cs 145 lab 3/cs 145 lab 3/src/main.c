@@ -32,8 +32,6 @@
 
 #include "notes.h"
 #include "still_alive.h"
-#include "mario.h"
-#include "smash.h"
 
 int get_numberPres(bool buttonPreSta[]);
 bool check_press(int r, int c);
@@ -97,13 +95,7 @@ void playSong(unsigned int song, unsigned int noteCount) {
 		Note_t note;
 		switch (song) {
 			case 0:
-				//note = stillAlive(i);
-				break;
-			case 1:
-				//note = mario(i);
-				break;
-			case 2:
-				note = smash(i);
+				note = stillAlive(i);
 				break;
 		}
 		
@@ -140,10 +132,6 @@ int main (void)
 	{
 		if (check_press(0, 0)) {
 			play = 1;
-		} else if (check_press(0, 1)) {
-			play = 2;
-		} else if (check_press(0, 2)) {
-			play = 3;
 		}
 		if (play == 1) {
 			clr_lcd();
@@ -151,18 +139,6 @@ int main (void)
 			pos_lcd(1, 0);
 			put_str_lcd("Still Alive");
 			playSong(0, STILL_ALIVE_SONG_LENGTH);
-		} else if (play == 2) {
-			clr_lcd();
-			put_str_lcd("Now playing...");
-			pos_lcd(1, 0);
-			put_str_lcd("Mario");
-			playSong(1, MARIO_SONG_LENGTH);
-		} else if (play == 3) {
-			clr_lcd();
-			put_str_lcd("Now playing...");
-			pos_lcd(1, 0);
-			put_str_lcd("Super Smash");
-			playSong(2, SMASH_SONG_LENGTH);
 		}
 		play = 0;
 	}
