@@ -10,9 +10,14 @@
 #define STILL_ALIVE_H_
 
 #include "notes.h"
-#include "lcd.h"
+
+// how many notes there are in the song
 #define STILL_ALIVE_SONG_LENGTH 436
 
+// A "compiled" song. Every 3 letters corresponds to a note
+// letter 1 corresponds to a duration
+// letter 2 corresponds to a frequence
+// letter 3 corresponds to whether the note ties into the next one
 char str[] = 
 "7j07i07g06g06i01!07!07907j07i07g05g05i07!05e07g05902!07905g07i04j07g05d04e05g079"
 "05905i01!07!07j07i07g06g06i01!07!07907j07i07g07g05!07i07e05!07g07901!05g07i04j07"
@@ -32,6 +37,7 @@ char str[] =
 "7n07l07i05e07g07i04i03!07l07l07n07l07i05e07g07i04i04!07l07l07l07n07l07i05e07g07i"
 "04i04!07j07l05l03!07j07i05i0";
 
+// Get the nth note from the song
 Note_t stillAlive(int ind) {
 	Note_t n;
 	n.frequency = getFrequency(str[3 * ind + 1]);

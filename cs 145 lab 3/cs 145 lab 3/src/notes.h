@@ -52,10 +52,9 @@
 
 #define REST 1
 
-//#define FACTOR 1575
-//#define FACTOR 1000
-#define FACTOR 1000
+#define FACTOR 1575
 
+// Note struct
 typedef struct Note {
 	unsigned long frequency;
 	unsigned long duration;
@@ -63,6 +62,8 @@ typedef struct Note {
 } Note_t;
 unsigned char val = 0;
 
+// Given an encoded character representing frequency, returns
+// how long to wait to achieve the frequency.
 unsigned long getFrequency(char frequency) {
 	if (frequency == '0') {
 		return C5;
@@ -178,6 +179,8 @@ unsigned long getFrequency(char frequency) {
 	return REST;
 }
 
+// Given an encoded character and the frequency value, returns how long to
+// wait.
 unsigned long getDuration(char duration, unsigned long frequency) {
 	if (duration == '0') {
 		return (unsigned long) 48 * FACTOR / frequency;
@@ -212,6 +215,7 @@ unsigned long getDuration(char duration, unsigned long frequency) {
 	return 0;
 }
 
+// Given an encoded character, returns whether to tie into the next note
 bool getTie(char tie) {
 	if (tie == '0') {
 		return true;
