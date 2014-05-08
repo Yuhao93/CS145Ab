@@ -87,10 +87,12 @@ bool check_press(int c, int r)
 }
 
 void playSong(unsigned int song, unsigned int noteCount) {
+	// Small rest in between playing notes
 	Note_t n;
 	n.frequency = getFrequency('!');
 	n.duration = getDuration('8', n.frequency);
 	n.breakAfter = getTie('0');
+	
 	for (unsigned int i = 0; i < noteCount; i++) {
 		Note_t note;
 		switch (song) {
@@ -101,6 +103,8 @@ void playSong(unsigned int song, unsigned int noteCount) {
 		
 		
 		playNote(note);
+		// Only play rest in between notes if we are not tieing into
+		// the next note
 		if (note.breakAfter) { playNote(n); }
 	}
 }
